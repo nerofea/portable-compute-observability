@@ -1,0 +1,13 @@
+Target Ecosystem & Compute Domains
+- NVIDIA
+- AMD
+- Intel
+- Polar Signals
+- Grafana Labs
+- Datadog
+- Google
+- Microsoft
+- AWS
+- Meta
+- OpenAI
+- Aztec  / L2's / Privacy Layers / ZK Back-ends / Proving Systems
