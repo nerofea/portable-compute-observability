@@ -1,0 +1,3 @@
+[submodule "webgpu-gpu-trace"]
+    path = research/webgpu-gpu-trace
+    url = https://github.com/zac-williamson/webgpu-gpu-trace.git
