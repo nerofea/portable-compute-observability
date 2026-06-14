@@ -665,4 +665,3 @@ Proof System Observability
 - Folding
 - Recursive Proofs
 - Aggregation
-
