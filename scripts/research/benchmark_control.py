@@ -29,9 +29,9 @@ def samples_in(path):
  try:
   with open(path,newline="") as f:
    rows=list(csv.DictReader(f))
-  keys=("latency_ns","elapsed_ns","duration_ns","gpu_ns")
+  keys=("latency_ns","elapsed_ns","duration_ns","dispatch_completion_ns","gpu_command_ns","gpu_ns")
   for key in keys:
-   if rows and key in rows[0]:return [int(r[key]) for r in rows if r[key]]
+   if rows and key in rows[0]:return [int(float(r[key])) for r in rows if r[key]]
  except (OSError,ValueError,KeyError):pass
  return []
 def execute(name,cmd,session,timeout,warmups,samples):
@@ -74,6 +74,8 @@ def main():
     f.write(json.dumps(telemetry.sample())+"\n");f.flush();stop.wait(2)
  worker=threading.Thread(target=monitor,daemon=True);worker.start()
  cases=[
+  ("tensor_nd",["cargo","run","--release","-p","pco-tensor","--","8",str(v.warmups),str(v.samples)],"cargo"),
+  ("rust_cpu",["cargo","run","--release","-p","pco-runner","--","run","--suite","apple-m5-smoke"],"cargo"),
   ("precision",["cargo","run","--release","-p","pco-precision","--",str(v.elements),str(v.samples)],"cargo"),
   ("metal",["bash","scripts/gpu/run-metal-primitives.sh",str(v.elements),str(v.samples),"17"],"bash"),
   ("metal_tensor",["bash","scripts/gpu/run-metal-tensor.sh","64",str(v.warmups),str(v.samples)],"bash"),

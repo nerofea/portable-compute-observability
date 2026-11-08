@@ -5,24 +5,27 @@ def percentile(values,p):
  if not values:return None
  s=sorted(values);return s[round((len(s)-1)*p)]
 def summarize_csv(path,backend):
- with open(path,newline="") as f:reader=csv.DictReader(f);rows=list(reader);columns=reader.fieldnames or []
+ with open(path,newline="") as f:
+  reader=csv.DictReader(f);rows=list(reader);columns=reader.fieldnames or []
  if not rows:return []
- scope=next((c for c in METRICS if c in columns and any(r.get(c) for r in rows)),None)
- if scope is None:return []
  groups={}
  for row in rows:
-  workload=row.get("workload","unspecified")
-  if row.get("validation","pass").lower() not in ("pass","ok","true",""):
-   continue
-  try:value=float(row[scope])
-  except (ValueError,TypeError,KeyError):continue
-  if value<0:continue
-  key=(workload,row.get("elements",""),scope)
-  groups.setdefault(key,[]).append(value)
- return [dict(backend=backend,workload=k[0],elements=k[1],timing_scope=k[2],samples=len(v),
+  if row.get("validation","pass").lower() not in ("pass","ok","true",""):continue
+  workload=row.get("workload") or row.get("operation") or "unspecified"
+  precision=row.get("format") or row.get("dtype") or "unspecified"
+  shape=row.get("shape") or ""
+  for scope in METRICS:
+   if scope not in columns or not row.get(scope):continue
+   try:value=float(row[scope])
+   except (ValueError,TypeError):continue
+   if not __import__("math").isfinite(value) or value<0:continue
+   key=(workload,row.get("elements",""),shape,precision,scope)
+   groups.setdefault(key,[]).append(value)
+ return [dict(backend=backend,workload=k[0],elements=k[1],shape=k[2],precision=k[3],timing_scope=k[4],samples=len(v),
               median_ns=statistics.median(v),p95_ns=percentile(v,.95),p99_ns=percentile(v,.99),
               min_ns=min(v),max_ns=max(v),source_csv=str(path.name))
          for k,v in sorted(groups.items())]
+
 def bundle(session,root,records):
  session=pathlib.Path(session);root=pathlib.Path(root)
  raw_dir=session/"raw";raw_dir.mkdir(exist_ok=True)
@@ -39,7 +42,7 @@ def bundle(session,root,records):
    except (OSError,UnicodeError,csv.Error,ValueError) as e:r.setdefault("report_warnings",[]).append(str(e))
   r["session_raw_csv"]=copied
  with (session/"kernel_metrics.csv").open("w",newline="") as f:
-  fields=["backend","workload","elements","timing_scope","samples","median_ns","p95_ns","p99_ns","min_ns","max_ns","source_csv"]
+  fields=["backend","workload","elements","shape","precision","timing_scope","samples","median_ns","p95_ns","p99_ns","min_ns","max_ns","source_csv"]
   writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader();writer.writerows(metrics)
  with (session/"summary.csv").open("w",newline="") as f:
   fields=["name","status","reason","wall_ms","warmups_requested","samples_requested","samples_observed","median_ns","p95_ns","energy_joules","energy_status"]
@@ -56,10 +59,10 @@ def bundle(session,root,records):
   lines.append(f"| {r.get('name')} | {r.get('status')} | {r.get('wall_ms','—')} | {r.get('samples_observed','—')} | {note} |")
  lines+=["","## Kernel metrics (nanoseconds)","",
          "These are **not cross-backend speedups**: each backend may measure a different scope.",
-         "","| Backend | Workload | Elements | Timing scope | N | Median ns | p95 ns | p99 ns |",
-         "|---|---|---:|---|---:|---:|---:|---:|"]
+         "","| Backend | Workload | Elements | Precision | Timing scope | N | Median ns | p95 ns | p99 ns |",
+         "|---|---|---:|---|---|---:|---:|---:|---:|"]
  for m in metrics:
-  lines.append(f"| {m['backend']} | {m['workload']} | {m['elements']} | {m['timing_scope']} | {m['samples']} | {m['median_ns']:.0f} | {m['p95_ns']:.0f} | {m['p99_ns']:.0f} |")
+  lines.append(f"| {m['backend']} | {m['workload']} | {m['elements']} | {m['precision']} | {m['timing_scope']} | {m['samples']} | {m['median_ns']:.0f} | {m['p95_ns']:.0f} | {m['p99_ns']:.0f} |")
  lines+=["","## Electricity, GPU, CPU and RAM telemetry","",
          "See `resources.jsonl`, `resource_summary.json`, `apple_power_components.csv` (when available), `thermal.jsonl` (when available), and `telemetry_capabilities.json`.",
          "Missing or unauthorized sensors are **unavailable**, not zero. External calibrated power CSV, when supplied, gives whole-process joules including overhead, **not kernel-only joules**.",
@@ -72,7 +75,7 @@ def bundle(session,root,records):
  (session/"report.txt").write_text(markdown.replace("**","").replace("`",""),encoding="utf-8")
  page="<!doctype html><html><meta charset='utf-8'><title>Compute Benchmark Report</title><style>body{font:15px system-ui;margin:3rem;max-width:1300px}table{border-collapse:collapse;width:100%;margin:1em 0}td,th{border:1px solid #bbb;padding:8px;text-align:left}th{background:#eee}code{background:#eee;padding:2px}</style><h1>Portable Compute Observability — Benchmark Report</h1>"
  page+=f"<p>Session: <code>{html.escape(session.name)}</code> | Completed {status_counts['ok']}, Failed {status_counts['failed']}, Skipped {status_counts['skipped']}</p>"
- for heading,items,fields in [("Backend execution",records,["name","status","wall_ms","samples_observed","reason","energy_joules","energy_status"]),("Kernel metrics",metrics,["backend","workload","elements","timing_scope","samples","median_ns","p95_ns","p99_ns"])]:
+ for heading,items,fields in [("Backend execution",records,["name","status","wall_ms","samples_observed","reason","energy_joules","energy_status"]),("Kernel metrics",metrics,["backend","workload","elements","shape","precision","timing_scope","samples","median_ns","p95_ns","p99_ns"])]:
   page+="<h2>"+heading+"</h2><table><tr>"+"".join("<th>"+html.escape(k)+"</th>" for k in fields)+"</tr>"
   for item in items:page+="<tr>"+"".join("<td>"+html.escape(str(item.get(k,"—")))+"</td>" for k in fields)+"</tr>"
   page+="</table>"

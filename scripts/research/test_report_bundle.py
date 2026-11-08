@@ -9,6 +9,14 @@ class ReportTests(unittest.TestCase):
    self.assertEqual(len(r),1)
    self.assertEqual(r[0]["timing_scope"],"dispatch_completion_ns")
    self.assertEqual(r[0]["median_ns"],150)
+ def test_precision_and_multiple_timers(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=pathlib.Path(d)/"mixed.csv"
+   p.write_text("workload,format,elements,dispatch_completion_ns,gpu_command_ns\\nmatmul,fp16,16,100,40\\nmatmul,fp32,16,200,80\\n")
+   rows=summarize_csv(p,"metal")
+   self.assertEqual(len(rows),4)
+   self.assertEqual({r["precision"] for r in rows},{"fp16","fp32"})
+   self.assertEqual({r["timing_scope"] for r in rows},{"dispatch_completion_ns","gpu_command_ns"})
  def test_artifacts(self):
   with tempfile.TemporaryDirectory() as d:
    root=pathlib.Path(d);(root/"results/raw").mkdir(parents=True)
