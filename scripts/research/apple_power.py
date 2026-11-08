@@ -13,7 +13,7 @@ class ApplePowerSampler:
  def start(self):
   if not supported():
    self.status='unavailable: powermetrics not installed or not macOS';return
-  cmd=['powermetrics','--samplers','cpu_power,gpu_power','-i',str(self.interval_ms)]
+  cmd=['sudo','-n','powermetrics','--samplers','cpu_power,gpu_power','-i',str(self.interval_ms)] if shutil.which('sudo') else ['powermetrics','--samplers','cpu_power,gpu_power','-i',str(self.interval_ms)]
   try:self.proc=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1)
   except OSError as exc:self.status='unavailable: '+str(exc);return
   self.status='collecting';self.thread=threading.Thread(target=self._read,daemon=True);self.thread.start()
