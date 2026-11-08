@@ -48,6 +48,14 @@ def bundle(session,root,records):
   fields=["name","status","reason","wall_ms","warmups_requested","samples_requested","samples_observed","median_ns","p95_ns","energy_joules","energy_status"]
   writer=csv.DictWriter(f,fieldnames=fields,extrasaction="ignore");writer.writeheader();writer.writerows(records)
  status_counts={s:sum(r.get("status")==s for r in records) for s in ("ok","failed","skipped")}
+ by_backend={}
+ for r in records:by_backend.setdefault(r.get("backend",r.get("name")),[]).append(r)
+ with (session/"repeat_summary.csv").open("w",newline="") as f:
+  w=csv.writer(f);w.writerow(["backend","runs","successful","failed","skipped","median_process_wall_ms","median_external_whole_process_joules","energy_note"])
+  for name,rs in sorted(by_backend.items()):
+   wall=[r["wall_ms"] for r in rs if r.get("status")=="ok" and isinstance(r.get("wall_ms"),(int,float))]
+   energy=[r["energy_joules"] for r in rs if r.get("status")=="ok" and isinstance(r.get("energy_joules"),(int,float))]
+   w.writerow([name,len(rs),sum(r.get("status")=="ok" for r in rs),sum(r.get("status")=="failed" for r in rs),sum(r.get("status")=="skipped" for r in rs),statistics.median(wall) if wall else "",statistics.median(energy) if energy else "","External whole-process only; no kernel attribution or idle subtraction"])
  lines=["# Portable Compute Observability — Benchmark Report","",
   f"Session: `{session.name}`","",
   f"**Completed:** {status_counts['ok']} | **Failed:** {status_counts['failed']} | **Skipped:** {status_counts['skipped']}","",
@@ -68,6 +76,7 @@ def bundle(session,root,records):
          "Missing or unauthorized sensors are **unavailable**, not zero. External calibrated power CSV, when supplied, gives whole-process joules including overhead, **not kernel-only joules**.",
          "Apple powermetrics values are estimated component power and receipt-time stamped; they are not integrated into kernel-specific energy.",
          "","## Reproduction and artifacts","",
+         "See `repeat_summary.csv` for independent repeated-run summary.","",
          "See `environment.json` for hardware, compiler and Git revision; `runs.jsonl` for backend diagnostics; `raw/` for archived CSV samples.",
          "No backend speedup or energy-efficiency ranking is claimed without matched timing scopes and calibrated attribution."]
  markdown="\n".join(lines)+"\n"

@@ -54,10 +54,12 @@ def main():
  a=argparse.ArgumentParser()
  for k,default in [("elements",65536),("warmups",10),("samples",30),("timeout",600)]:a.add_argument("--"+k,type=int,default=default)
  a.add_argument("--power-csv",default=None,help="External calibrated sensor: unix_ns,power_watts,source")
+ a.add_argument("--repeats",type=int,default=3,help="Independent repeated process runs per backend (default 3)")
+ a.add_argument("--idle-seconds",type=float,default=3,help="Quiet interval before each repeated run")
  v=a.parse_args()
  global POWER_SAMPLES
  POWER_SAMPLES=telemetry.read_power_csv(v.power_csv)
- if not (1<=v.elements<=16777216 and 0<=v.warmups<=10000 and 1<=v.samples<=10000 and 1<=v.timeout<=86400):a.error("Out-of-range parameter")
+ if not (1<=v.elements<=16777216 and 0<=v.warmups<=10000 and 1<=v.samples<=10000 and 1<=v.timeout<=86400 and 1<=v.repeats<=100 and 0<=v.idle_seconds<=120):a.error("Out-of-range parameter")
  session=ROOT/"results"/"sessions"/(datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-"+uuid.uuid4().hex[:8])
  session.mkdir(parents=True)
  (ROOT/"results"/"raw").mkdir(parents=True,exist_ok=True)
@@ -87,10 +89,15 @@ def main():
  try:
   with (session/"runs.jsonl").open("w") as f:
    for name,cmd,required in cases:
-    if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
-    elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
-    else:r=execute(name,cmd,session,v.timeout,v.warmups,v.samples)
-    records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(name,r["status"],flush=True)
+    for repeat in range(v.repeats):
+     if v.idle_seconds:time.sleep(v.idle_seconds)
+     run_name=f"{name}_repeat_{repeat+1:02d}"
+     if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
+     elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
+     else:r=execute(run_name,cmd,session,v.timeout,v.warmups,v.samples)
+     r["backend"]=name;r["repeat"]=repeat+1;r["repeats_requested"]=v.repeats
+     r["name"]=run_name
+     records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(run_name,r["status"],flush=True)
  finally:stop.set();worker.join(timeout=5)
  (session/"apple_power_status.json").write_text(json.dumps(power_sampler.stop(),indent=2))
  (session/"thermal_status.json").write_text(json.dumps({"status":thermal.stop()},indent=2))
