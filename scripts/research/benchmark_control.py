@@ -6,6 +6,7 @@ import native_telemetry as telemetry
 from apple_power import ApplePowerSampler
 from thermal_monitor import ThermalMonitor
 from report_bundle import bundle
+import energy_analysis
 POWER_SAMPLES=[]
 def command(cmd,timeout=10):
  try:
@@ -49,17 +50,18 @@ def execute(name,cmd,session,timeout,warmups,samples):
  raw=sorted(after-before,key=lambda p:p.stat().st_mtime_ns)
  timings=[n for f in raw for n in samples_in(f)]
  energy=telemetry.integrate_power(POWER_SAMPLES,start_unix,end_unix) if POWER_SAMPLES else None
- return {"name":name,"status":status,"reason":reason,"wall_ms":wall_ms,"warmups_requested":warmups,"samples_requested":samples,"samples_observed":len(timings),"median_ns":statistics.median(timings) if timings else None,"p95_ns":sorted(timings)[min(len(timings)-1,int(.95*(len(timings)-1)))] if timings else None,"raw_csv":[str(f.relative_to(ROOT)) for f in raw],"stdout_tail":p.stdout[-1000:] if p else "","energy_joules":energy,"energy_status":"measured external whole-process window" if energy is not None else "unavailable: no aligned calibrated external power samples"}
+ return {"name":name,"status":status,"reason":reason,"wall_ms":wall_ms,"active_start_unix_ns":start_unix,"active_end_unix_ns":end_unix,"warmups_requested":warmups,"samples_requested":samples,"samples_observed":len(timings),"median_ns":statistics.median(timings) if timings else None,"p95_ns":sorted(timings)[min(len(timings)-1,int(.95*(len(timings)-1)))] if timings else None,"raw_csv":[str(f.relative_to(ROOT)) for f in raw],"stdout_tail":p.stdout[-1000:] if p else "","energy_joules":energy,"energy_status":"measured external whole-process window" if energy is not None else "unavailable: no aligned calibrated external power samples"}
 def main():
  a=argparse.ArgumentParser()
- for k,default in [("elements",65536),("warmups",10),("samples",30),("timeout",600)]:a.add_argument("--"+k,type=int,default=default)
+ for k,default in [("elements",65536),("warmups",30),("samples",100),("timeout",600)]:a.add_argument("--"+k,type=int,default=default)
  a.add_argument("--power-csv",default=None,help="External calibrated sensor: unix_ns,power_watts,source")
  a.add_argument("--repeats",type=int,default=3,help="Independent repeated process runs per backend (default 3)")
  a.add_argument("--idle-seconds",type=float,default=3,help="Quiet interval before each repeated run")
+ a.add_argument("--baseline-seconds",type=float,default=6,help="Measured idle power window preceding each workload")
  v=a.parse_args()
  global POWER_SAMPLES
  POWER_SAMPLES=telemetry.read_power_csv(v.power_csv)
- if not (1<=v.elements<=16777216 and 0<=v.warmups<=10000 and 1<=v.samples<=10000 and 1<=v.timeout<=86400 and 1<=v.repeats<=100 and 0<=v.idle_seconds<=120):a.error("Out-of-range parameter")
+ if not (1<=v.elements<=16777216 and 0<=v.warmups<=10000 and 1<=v.samples<=10000 and 1<=v.timeout<=86400 and 1<=v.repeats<=100 and 0<=v.idle_seconds<=120 and 0<=v.baseline_seconds<=120):a.error("Out-of-range parameter")
  session=ROOT/"results"/"sessions"/(datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-"+uuid.uuid4().hex[:8])
  session.mkdir(parents=True)
  (ROOT/"results"/"raw").mkdir(parents=True,exist_ok=True)
@@ -87,20 +89,47 @@ def main():
   ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python"),
   ("mlx_compute",[sys.executable,"scripts/research/mlx-compute.py","64",str(v.warmups),str(v.samples)],"python")]
  records=[]
+ windows=[]
  try:
   with (session/"runs.jsonl").open("w") as f:
    for name,cmd,required in cases:
     for repeat in range(v.repeats):
      if v.idle_seconds:time.sleep(v.idle_seconds)
+     baseline_start=time.time_ns()
+     if v.baseline_seconds:time.sleep(v.baseline_seconds)
+     baseline_end=time.time_ns()
      run_name=f"{name}_repeat_{repeat+1:02d}"
      if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
      elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx","mlx_compute") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
      else:r=execute(run_name,cmd,session,v.timeout,v.warmups,v.samples)
+     r["baseline_start_unix_ns"]=baseline_start
+     r["baseline_end_unix_ns"]=baseline_end
      r["backend"]=name;r["repeat"]=repeat+1;r["repeats_requested"]=v.repeats
      r["name"]=run_name
      records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(run_name,r["status"],flush=True)
  finally:stop.set();worker.join(timeout=5)
  (session/"apple_power_status.json").write_text(json.dumps(power_sampler.stop(),indent=2))
+ # Evaluate power only after the sampler has stopped and its CSV is flushed.
+ components=energy_analysis.read_component_csv(session/"apple_power_components.csv")
+ external=energy_analysis.read_external_csv(v.power_csv)
+ sources={}
+ for stamp,component,watts in components:sources.setdefault("apple:"+component,[]).append((stamp,watts))
+ if external:sources["external:wall"]=external
+ for r in records:
+  if "active_start_unix_ns" not in r:continue
+  for source,points in sources.items():
+   e=energy_analysis.estimate(points,(r["baseline_start_unix_ns"],r["baseline_end_unix_ns"]),(r["active_start_unix_ns"],r["active_end_unix_ns"]),source)
+   windows.append({"backend":r["backend"],"repeat":r["repeat"],"baseline_start_unix_ns":r["baseline_start_unix_ns"],"baseline_end_unix_ns":r["baseline_end_unix_ns"],"active_start_unix_ns":r["active_start_unix_ns"],"active_end_unix_ns":r["active_end_unix_ns"],**e})
+ if not sources:
+  for r in records:
+   if "active_start_unix_ns" in r:windows.append({"backend":r["backend"],"repeat":r["repeat"],"status":"unavailable: no power sensor samples","source":"none"})
+ energy_fields=["backend","repeat","source","status","baseline_start_unix_ns","baseline_end_unix_ns","active_start_unix_ns","active_end_unix_ns","baseline_watts","active_joules","net_joules","active_seconds","warning"]
+ with (session/"energy_windows.csv").open("w",newline="") as f:
+  w=csv.DictWriter(f,fieldnames=energy_fields,extrasaction="ignore");w.writeheader();w.writerows(windows)
+ groups={}
+ for e in windows:groups.setdefault((e["backend"],e["source"]),[]).append(e)
+ uncertainty={backend+" / "+source:energy_analysis.repeat_statistics(group) for (backend,source),group in groups.items()}
+ (session/"energy_uncertainty.json").write_text(json.dumps(uncertainty,indent=2))
  (session/"thermal_status.json").write_text(json.dumps({"status":thermal.stop()},indent=2))
  (session/"resource_summary.json").write_text(json.dumps(telemetry.summarize_resource_file(session/"resources.jsonl"),indent=2))
  fields=["name","status","reason","wall_ms","warmups_requested","samples_requested","samples_observed","median_ns","p95_ns","energy_joules","energy_status"]
