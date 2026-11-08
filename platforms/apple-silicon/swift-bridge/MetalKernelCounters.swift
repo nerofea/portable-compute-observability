@@ -18,7 +18,7 @@ let ap=a.contents().bindMemory(to:Float.self,capacity:n)
 let bp=b.contents().bindMemory(to:Float.self,capacity:n)
 let op=out.contents().bindMemory(to:Float.self,capacity:n)
 for i in 0..<n { ap[i]=Float(i%997)*0.001;bp[i]=Float(i%991)*0.002 }
-let timestampSet=device.counterSets?.first(where:{$0.name == MTLCommonCounterSet.timestamp})
+let timestampSet=device.counterSets?.first(where:{$0.name == MTLCommonCounterSet.timestamp.rawValue})
 let counterEnabled=timestampSet != nil && device.supportsCounterSampling(.atDispatchBoundary)
 func execute()->(UInt64,Double?,Double?) {
  guard let command=queue.makeCommandBuffer() else { fatalError("Command buffer unavailable") }
