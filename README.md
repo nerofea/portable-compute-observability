@@ -4,17 +4,19 @@ Portable observability, inference, and optimization architecture for cryptograph
 
 ## Quick start — benchmark suite
 
+**[Precision lab: FP32, BF16, FP16, INT8 and experimental BFP8](docs/PRECISION-LAB.md)**
+
 **[Interaction laboratory: algorithms × compiler × architecture × energy](docs/INTERACTION-LAB.md)**
 
 **[Copy/paste terminal commands for Mac M5, Linux and NVIDIA](docs/RUN-BENCHMARKS.md)**
 
 **[GPU benchmark runbook](docs/GPU-RUNBOOK.md)**
 
-**[Implementation track audit: working, partial, planned and missing](docs/IMPLEMENTATION-TRACKS.md)**
+**[Implementation track audit](docs/IMPLEMENTATION-TRACKS.md)**
 
 **[Full workload and measurement coverage](docs/BENCHMARK-COVERAGE.md)**
 
-The Apple M5 feature branch provides Rust CPU/memory benchmark source, standalone Swift/Metal primitive benchmarks, terminal telemetry scripts, and an executable randomized CPU compiler/algorithm experiment orchestrator. AI, cryptographic, rollup, wgpu and CUDA compute catalogues are not executable implementations yet. No M5 results have been verified.
+The precision lab measures software-quantized inputs with f32 CPU arithmetic; native reduced-precision GPU computation is not yet implemented. No M5 hardware measurements have been verified.
 
 ## Mission
 Build portable observability, inference, and optimization systems for cryptographic, AI, scientific, and high-performance computing workloads.

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/pco-core", "crates/pco-runner", "crates/pco-cpu", "crates/pco-statistics", "crates/pco-memory"]
+members = ["crates/pco-core", "crates/pco-runner", "crates/pco-cpu", "crates/pco-statistics", "crates/pco-memory", "crates/pco-precision"]
 resolver = "2"
 
 [workspace.package]
