@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "name": "cpu-compiler-algorithm-interaction-v1",
+  "seed": 20261108,
+  "algorithms": ["vector_add", "copy", "scale", "triad"],
+  "sizes": [1024, 65536, 1048576],
+  "compiler_flags": ["-C opt-level=3", "-C opt-level=3 -C target-cpu=native"],
+  "warmups": 20,
+  "samples": 50,
+  "repeats": 3
+}

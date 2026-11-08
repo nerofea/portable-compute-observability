@@ -4,13 +4,17 @@ Portable observability, inference, and optimization architecture for cryptograph
 
 ## Quick start — benchmark suite
 
+**[Interaction laboratory: algorithms × compiler × architecture × energy](docs/INTERACTION-LAB.md)**
+
 **[Copy/paste terminal commands for Mac M5, Linux and NVIDIA](docs/RUN-BENCHMARKS.md)**
+
+**[GPU benchmark runbook](docs/GPU-RUNBOOK.md)**
 
 **[Implementation track audit: working, partial, planned and missing](docs/IMPLEMENTATION-TRACKS.md)**
 
 **[Full workload and measurement coverage](docs/BENCHMARK-COVERAGE.md)**
 
-The Apple M5 feature branch currently provides a Rust CPU/memory baseline, standalone Swift/Metal vector-add source, and terminal telemetry scripts. AI, cryptographic, rollup, wgpu and CUDA compute catalogues are not executable implementations yet. No M5 results have been verified.
+The Apple M5 feature branch provides Rust CPU/memory benchmark source, standalone Swift/Metal primitive benchmarks, terminal telemetry scripts, and an executable randomized CPU compiler/algorithm experiment orchestrator. AI, cryptographic, rollup, wgpu and CUDA compute catalogues are not executable implementations yet. No M5 results have been verified.
 
 ## Mission
 Build portable observability, inference, and optimization systems for cryptographic, AI, scientific, and high-performance computing workloads.

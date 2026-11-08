@@ -1,5 +1,6 @@
 /target/
 /results/raw/
 /results/local/
+/results/research/
 *.profraw
 .DS_Store
