@@ -5,6 +5,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[2]
 import native_telemetry as telemetry
 from apple_power import ApplePowerSampler
 from thermal_monitor import ThermalMonitor
+from report_bundle import bundle
 POWER_SAMPLES=[]
 def command(cmd,timeout=10):
  try:
@@ -97,5 +98,7 @@ def main():
  body="".join("<tr>"+"".join("<td>"+html.escape(str(r.get(k,"—")))+"</td>" for k in fields)+"</tr>" for r in records)
  report="<!doctype html><html><meta charset='utf-8'><title>Compute report</title><style>body{font:14px system-ui;margin:3rem}table{border-collapse:collapse}td,th{border:1px solid #aaa;padding:8px}th{background:#eee}</style><h1>Compute interaction report</h1><p>Different backend timing scopes are NOT comparable as GPU speedups. Missing energy is unavailable, not zero. Raw CSV files, host environment, capability inventory, resource summary and timestamped resource samples accompany this report. External energy, if present, is whole-process energy and includes non-kernel overhead.</p><table><tr>"+"".join("<th>"+html.escape(k)+"</th>" for k in fields)+"</tr>"+body+"</table></html>"
  (session/"report.html").write_text(report)
+ counts,metrics=bundle(session,ROOT,records)
+ print("BACKENDS: "+str(counts)+"; metric groups: "+str(len(metrics)),flush=True)
  print("REPORT:"+str(session/"report.html"))
 if __name__=="__main__":main()
