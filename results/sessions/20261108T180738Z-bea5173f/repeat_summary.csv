@@ -1,0 +1,11 @@
+backend,runs,successful,failed,skipped,median_process_wall_ms,median_external_whole_process_joules,energy_note
+accelerate,3,3,0,0,630.12725,,External whole-process only; no kernel attribution or idle subtraction
+metal,3,3,0,0,877.962458,,External whole-process only; no kernel attribution or idle subtraction
+metal_kernel_counters,3,3,0,0,711.520042,,External whole-process only; no kernel attribution or idle subtraction
+metal_tensor,3,3,0,0,944.347417,,External whole-process only; no kernel attribution or idle subtraction
+mlx,3,3,0,0,169.74875,,External whole-process only; no kernel attribution or idle subtraction
+mlx_compute,3,0,0,3,,,External whole-process only; no kernel attribution or idle subtraction
+precision,3,3,0,0,217.635791,,External whole-process only; no kernel attribution or idle subtraction
+rust_cpu,3,3,0,0,180.327166,,External whole-process only; no kernel attribution or idle subtraction
+tensor_nd,3,3,0,0,1466.92825,,External whole-process only; no kernel attribution or idle subtraction
+wgpu,3,3,0,0,418.0405,,External whole-process only; no kernel attribution or idle subtraction

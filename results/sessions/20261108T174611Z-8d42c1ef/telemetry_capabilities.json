@@ -1,0 +1,11 @@
+{
+  "platform": "macOS-27.2-arm64-arm-64bit",
+  "vm_stat": true,
+  "memory_pressure": true,
+  "powermetrics_available": true,
+  "powermetrics_requires_privilege": true,
+  "metal_gpu_counters": "requires Instruments/Xcode; not sampled",
+  "nvidia_smi": false,
+  "external_power_csv": "optional unix_ns,power_watts,source",
+  "energy_scope": "whole process, external sensor only"
+}

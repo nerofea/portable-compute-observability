@@ -1,0 +1,5 @@
+{
+  "sample_count": 143,
+  "sampling_scope": "system, not isolated workload",
+  "free_memory_percent_min": null
+}

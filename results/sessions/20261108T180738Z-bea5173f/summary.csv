@@ -1,0 +1,31 @@
+name,status,reason,wall_ms,warmups_requested,samples_requested,samples_observed,median_ns,p95_ns,energy_joules,energy_status
+tensor_nd_repeat_01,ok,,1639.406417,30,100,9000,625.0,740334,,unavailable: no aligned calibrated external power samples
+tensor_nd_repeat_02,ok,,1464.162625,30,100,9000,625.0,741791,,unavailable: no aligned calibrated external power samples
+tensor_nd_repeat_03,ok,,1466.92825,30,100,9000,625.0,755625,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_01,ok,,300.910667,30,100,120,3771.0,13458,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_02,ok,,180.327166,30,100,120,2645.5,9209,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_03,ok,,175.232584,30,100,120,2583.5,10333,,unavailable: no aligned calibrated external power samples
+precision_repeat_01,ok,,424.924458,30,100,500,61416.0,115125,,unavailable: no aligned calibrated external power samples
+precision_repeat_02,ok,,217.223208,30,100,500,52291.5,66166,,unavailable: no aligned calibrated external power samples
+precision_repeat_03,ok,,217.635791,30,100,500,52312.5,71875,,unavailable: no aligned calibrated external power samples
+metal_repeat_01,ok,,966.185208,30,100,400,286375.0,308875,,unavailable: no aligned calibrated external power samples
+metal_repeat_02,ok,,877.962458,30,100,400,305166.5,412584,,unavailable: no aligned calibrated external power samples
+metal_repeat_03,ok,,854.595,30,100,400,318791.5,364000,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_01,ok,,1082.498292,30,100,300,352895.5,500875,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_02,ok,,941.222083,30,100,300,336062.5,426042,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_03,ok,,944.347417,30,100,300,336812.5,426375,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_01,ok,,891.302167,30,100,100,467542.0,524042,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_02,ok,,711.520042,30,100,100,306916.5,367958,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_03,ok,,703.66725,30,100,100,327687.5,360708,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_01,ok,,601.553125,30,100,100,1300729.0,1352500,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_02,ok,,418.0405,30,100,100,1293270.5,1315500,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_03,ok,,408.501,30,100,100,1287021.0,1312167,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_01,ok,,772.324333,30,100,100,7125.0,8417,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_02,ok,,630.12725,30,100,100,4916.0,4959,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_03,ok,,607.464417,30,100,100,4917.0,7500,,unavailable: no aligned calibrated external power samples
+mlx_repeat_01,ok,,525.834666,30,100,100,321875.5,571791,,unavailable: no aligned calibrated external power samples
+mlx_repeat_02,ok,,169.74875,30,100,100,339937.5,415792,,unavailable: no aligned calibrated external power samples
+mlx_repeat_03,ok,,165.996375,30,100,100,340375.5,379125,,unavailable: no aligned calibrated external power samples
+mlx_compute_repeat_01,skipped,Missing executable: python,,,,,,,,
+mlx_compute_repeat_02,skipped,Missing executable: python,,,,,,,,
+mlx_compute_repeat_03,skipped,Missing executable: python,,,,,,,,

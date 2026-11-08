@@ -1,0 +1,47 @@
+{
+  "tensor_nd / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "rust_cpu / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "precision / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "metal / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "metal_tensor / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "metal_kernel_counters / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "wgpu / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "accelerate / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  },
+  "mlx / none": {
+    "n": 0,
+    "median_net_joules": null,
+    "uncertainty": "unavailable: need >=3 measured repeats"
+  }
+}

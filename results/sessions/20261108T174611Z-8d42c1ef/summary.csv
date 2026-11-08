@@ -1,0 +1,85 @@
+name,status,reason,wall_ms,warmups_requested,samples_requested,samples_observed,median_ns,p95_ns,energy_joules,energy_status
+tensor_nd_repeat_01,ok,,16503.621625,30,100,9000,667.0,745250,,unavailable: no aligned calibrated external power samples
+tensor_nd_repeat_02,ok,,1467.072208,30,100,9000,625.0,741417,,unavailable: no aligned calibrated external power samples
+tensor_nd_repeat_03,ok,,1474.586625,30,100,9000,666.0,741000,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_01,ok,,7296.776667,30,100,120,3229.0,16750,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_02,ok,,182.084375,30,100,120,2583.5,9209,,unavailable: no aligned calibrated external power samples
+rust_cpu_repeat_03,ok,,183.187167,30,100,120,2562.5,10333,,unavailable: no aligned calibrated external power samples
+precision_repeat_01,ok,,1532.764792,30,100,500,61375.0,115167,,unavailable: no aligned calibrated external power samples
+precision_repeat_02,ok,,224.534584,30,100,500,52333.5,71916,,unavailable: no aligned calibrated external power samples
+precision_repeat_03,ok,,237.87975,30,100,500,54458.0,80750,,unavailable: no aligned calibrated external power samples
+metal_repeat_01,ok,,1316.225417,30,100,400,333500.0,430792,,unavailable: no aligned calibrated external power samples
+metal_repeat_02,ok,,868.046458,30,100,400,311583.0,424875,,unavailable: no aligned calibrated external power samples
+metal_repeat_03,ok,,810.430041,30,100,400,277708.0,320416,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_01,ok,,1109.513875,30,100,300,352916.5,442916,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_02,ok,,920.544625,30,100,300,345666.5,434334,,unavailable: no aligned calibrated external power samples
+metal_tensor_repeat_03,ok,,894.939334,30,100,300,334833.5,416625,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_01,failed,"ary)
+23 | func execute()->(UInt64,Double?,Double?) {
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:37:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+35 |  encoder.setBuffer(out,offset:0,index:2)
+36 |  var count=UInt32(n);encoder.setBytes(&count,length:4,index:3)
+37 |  if let sample=sample { encoder.sampleCounters(sample,at:0,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:40:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+40 |  if let sample=sample { encoder.sampleCounters(sample,at:1,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+41 |  encoder.endEncoding()
+42 |  let begin=DispatchTime.now().uptimeNanoseconds
+",254.709834,30,100,0,,,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_02,failed,"ary)
+23 | func execute()->(UInt64,Double?,Double?) {
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:37:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+35 |  encoder.setBuffer(out,offset:0,index:2)
+36 |  var count=UInt32(n);encoder.setBytes(&count,length:4,index:3)
+37 |  if let sample=sample { encoder.sampleCounters(sample,at:0,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:40:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+40 |  if let sample=sample { encoder.sampleCounters(sample,at:1,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+41 |  encoder.endEncoding()
+42 |  let begin=DispatchTime.now().uptimeNanoseconds
+",243.98675,30,100,0,,,,unavailable: no aligned calibrated external power samples
+metal_kernel_counters_repeat_03,failed,"ary)
+23 | func execute()->(UInt64,Double?,Double?) {
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:37:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+35 |  encoder.setBuffer(out,offset:0,index:2)
+36 |  var count=UInt32(n);encoder.setBytes(&count,length:4,index:3)
+37 |  if let sample=sample { encoder.sampleCounters(sample,at:0,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+
+platforms/apple-silicon/swift-bridge/MetalKernelCounters.swift:40:47: error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+38 |  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
+39 |  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
+40 |  if let sample=sample { encoder.sampleCounters(sample,at:1,withBarrier:true) }
+   |                                               `- error: incorrect argument labels in call (have '_:at:withBarrier:', expected 'sampleBuffer:sampleIndex:barrier:')
+41 |  encoder.endEncoding()
+42 |  let begin=DispatchTime.now().uptimeNanoseconds
+",269.745542,30,100,0,,,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_01,ok,,18751.372542,30,100,100,1286604.0,1292959,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_02,ok,,433.877125,30,100,100,1291000.0,1316833,,unavailable: no aligned calibrated external power samples
+wgpu_repeat_03,ok,,449.70975,30,100,100,1287562.5,2549417,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_01,ok,,1450.035791,30,100,100,7083.0,7458,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_02,ok,,632.868875,30,100,100,5250.0,5292,,unavailable: no aligned calibrated external power samples
+accelerate_repeat_03,ok,,614.472166,30,100,100,4917.0,5250,,unavailable: no aligned calibrated external power samples
+mlx_repeat_01,skipped,Missing executable: python,,,,,,,,
+mlx_repeat_02,skipped,Missing executable: python,,,,,,,,
+mlx_repeat_03,skipped,Missing executable: python,,,,,,,,
+mlx_compute_repeat_01,skipped,Missing executable: python,,,,,,,,
+mlx_compute_repeat_02,skipped,Missing executable: python,,,,,,,,
+mlx_compute_repeat_03,skipped,Missing executable: python,,,,,,,,
