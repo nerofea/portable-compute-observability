@@ -1,0 +1,4 @@
+name = "crypto-zk-research"
+status = "planned"
+workloads = ["sha256", "keccak256", "blake3", "poseidon", "poseidon2", "rescue", "field_add", "field_mul", "montgomery_reduce", "field_inverse", "fft", "ntt", "ec_add", "ec_mul", "msm_pippenger", "merkle", "mmr", "kzg", "ipa", "fri", "witness", "noir_barretenberg", "halo2", "stark", "groth16", "sp1", "risc_zero", "proof_verify", "recursion", "aggregation", "rollup_batch"]
+metrics = ["latency_ms", "proofs_s", "transactions_s", "peak_memory_bytes", "energy_joules", "correctness"]

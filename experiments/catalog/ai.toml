@@ -1,0 +1,4 @@
+name = "ai-research"
+status = "planned"
+workloads = ["gemm", "conv2d", "relu", "gelu", "softmax", "layernorm", "rmsnorm", "attention", "tiled_attention", "kv_cache", "mlp", "cnn", "rnn", "lstm", "backprop", "adam", "sgd", "int8_quantization", "int4_quantization", "coreml", "mlx", "llamacpp"]
+metrics = ["latency_ms", "tokens_s", "peak_memory_bytes", "energy_joules", "accuracy"]

@@ -1,0 +1,4 @@
+name = "collections-research"
+status = "planned"
+workloads = ["vec_push", "vec_iter", "slice_iter", "hashmap_insert", "hashmap_lookup", "btreemap_lookup", "hashset_insert", "vecdeque_push", "binaryheap_push", "sort_unstable", "binary_search", "aos_soa"]
+metrics = ["latency_ms", "throughput_ops_s", "peak_rss_bytes", "energy_joules"]

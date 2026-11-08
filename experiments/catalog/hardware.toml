@@ -1,0 +1,4 @@
+name = "hardware-research"
+status = "planned"
+workloads = ["cpu_scalar", "cpu_neon", "cpu_rayons", "cache_stride", "pointer_chase", "stream_copy", "stream_triad", "metal_vector_add", "wgpu_vector_add", "cuda_vector_add", "gpu_transfer", "gpu_shared_buffers", "thermal_sustained", "storage_mmap", "wasm_compute", "sph", "nbody"]
+metrics = ["latency_ms", "bandwidth_gbps", "peak_rss_bytes", "gpu_memory_bytes", "power_watts", "energy_joules"]
