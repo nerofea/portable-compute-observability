@@ -9,7 +9,8 @@ let args = CommandLine.arguments
 let count = args.count > 1 ? (Int(args[1]) ?? 1048576) : 1048576
 let trials = args.count > 2 ? (Int(args[2]) ?? 30) : 30
 let stride = args.count > 3 ? (Int(args[3]) ?? 17) : 17
-precondition(count > 0 && count <= 16777216 && trials > 0 && trials <= 100000 && stride > 0)
+let warmups = args.count > 4 ? (Int(args[4]) ?? 30) : 30
+precondition(count > 0 && count <= 16777216 && trials > 0 && trials <= 100000 && stride > 0 && warmups >= 0 && warmups <= 10000)
 guard let device = MTLCreateSystemDefaultDevice(), let queue = device.makeCommandQueue() else {
     fatalError("Metal device or queue unavailable")
 }
@@ -81,7 +82,7 @@ try FileManager.default.createDirectory(atPath: "results/raw", withIntermediateD
 let outputPath = "results/raw/metal-primitives-\(count)-\(Int(Date().timeIntervalSince1970)).csv"
 var csv = "workload,backend,elements,iteration,dispatch_completion_ns,gpu_command_ns,logical_bytes,validation\n"
 for workload in ["vector_add", "scale", "triad", "gather"] {
-    for _ in 0..<10 { _ = execute(workload) }
+    for _ in 0..<warmups { _ = execute(workload) }
     for i in 0..<count {
         let actual = op[i], want = expected(workload, i)
         precondition(abs(actual - want) <= 1e-5 + abs(want) * 1e-5, "Mismatch \(workload) at \(i)")

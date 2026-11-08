@@ -84,7 +84,8 @@ def main():
   ("metal_kernel_counters",["bash","scripts/gpu/run-metal-kernel-counters.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
   ("wgpu",["cargo","run","--release","-p","pco-wgpu","--",str(v.elements),str(v.warmups),str(v.samples)],"cargo"),
   ("accelerate",["bash","scripts/research/run-accelerate.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
-  ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python")]
+  ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python"),
+  ("mlx_compute",[sys.executable,"scripts/research/mlx-compute.py","64",str(v.warmups),str(v.samples)],"python")]
  records=[]
  try:
   with (session/"runs.jsonl").open("w") as f:
@@ -93,7 +94,7 @@ def main():
      if v.idle_seconds:time.sleep(v.idle_seconds)
      run_name=f"{name}_repeat_{repeat+1:02d}"
      if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
-     elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
+     elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx","mlx_compute") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
      else:r=execute(run_name,cmd,session,v.timeout,v.warmups,v.samples)
      r["backend"]=name;r["repeat"]=repeat+1;r["repeats_requested"]=v.repeats
      r["name"]=run_name

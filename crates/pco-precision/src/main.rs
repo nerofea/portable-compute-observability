@@ -5,7 +5,8 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     let args:Vec<String>=env::args().collect();
     let n=args.get(1).map(|s|s.parse::<usize>()).transpose()?.unwrap_or(65536);
     let samples=args.get(2).map(|s|s.parse::<usize>()).transpose()?.unwrap_or(30);
-    if n==0 || n>16_777_216 || samples==0 || samples>10000 {return Err("invalid n or samples".into());}
+    let warmups=args.get(3).map(|s|s.parse::<usize>()).transpose()?.unwrap_or(30);
+    if n==0 || n>16_777_216 || samples==0 || samples>10000 || warmups>10000 {return Err("invalid n or samples".into());}
     let (a,b)=deterministic_inputs(n);
     let reference:Vec<f32>=a.iter().zip(&b).map(|(x,y)|x+y).collect();
     fs::create_dir_all("results/raw")?;
@@ -17,14 +18,14 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
         let aq=quantize(&a,format);
         let bq=quantize(&b,format);
         let mut output=vec![0f32;n];
-        for iteration in 0..(samples+10) {
+        for iteration in 0..(samples+warmups) {
             let start=Instant::now();
             for i in 0..n {output[i]=black_box(aq[i])+black_box(bq[i]);}
             black_box(&output);
             let ns=start.elapsed().as_nanos();
             let (rmse,max_abs)=error_metrics(&output,&reference);
-            if iteration>=10 {
-                writeln!(writer,"{},software_emulation,rust_cpu,vector_add,{n},{},{ns},{rmse},{max_abs}",format.name(),iteration-10)?;
+            if iteration>=warmups {
+                writeln!(writer,"{},software_emulation,rust_cpu,vector_add,{n},{},{ns},{rmse},{max_abs}",format.name(),iteration-warmups)?;
             }
         }
     }

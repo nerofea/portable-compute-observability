@@ -88,6 +88,7 @@ def bundle(session,root,records):
   page+="<h2>"+heading+"</h2><table><tr>"+"".join("<th>"+html.escape(k)+"</th>" for k in fields)+"</tr>"
   for item in items:page+="<tr>"+"".join("<td>"+html.escape(str(item.get(k,"—")))+"</td>" for k in fields)+"</tr>"
   page+="</table>"
+ page+="<h2>Power baseline and energy</h2><p>See <code>energy_windows.csv</code> and <code>energy_uncertainty.json</code> for baseline power, active joules, incremental joules and repeat uncertainty. Values may be unavailable without continuous sensor coverage. Component-power samples use receipt timestamps and are estimates, not kernel-exclusive energy.</p>"
  page+="<h2>Measurement limitations</h2><p>Timing scopes differ across backends. No cross-backend speedup ranking. External power is whole-process energy; Apple component estimates are not kernel joules. Missing counters are unavailable, not zero.</p><p>See report.md, report.txt, summary.csv, kernel_metrics.csv, raw/, resources.jsonl, environment.json and telemetry_capabilities.json in this session directory.</p></html>"
  (session/"report.html").write_text(page,encoding="utf-8")
  (session/"report.json").write_text(json.dumps({"session":session.name,"status_counts":status_counts,"backends":records,"kernel_metrics":metrics},indent=2),encoding="utf-8")
