@@ -1,0 +1,7 @@
+name = "apple-m5-baseline"
+backend = "rust_cpu"
+workloads = ["vector_add"]
+sizes = [1024, 16384, 65536, 262144, 1048576, 4194304]
+warmup_iterations = 10
+measured_iterations = 50
+validation = true

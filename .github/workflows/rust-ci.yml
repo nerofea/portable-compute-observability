@@ -1,0 +1,18 @@
+name: Rust CI
+on:
+  push:
+    branches: [main, feat/apple-m5-benchmark-suite]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.99.1"
+          components: clippy,rustfmt
+      - run: cargo fmt --all -- --check
+      - run: cargo test --workspace
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo run --release -p pco-runner -- run --suite apple-m5-smoke

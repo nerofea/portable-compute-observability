@@ -1,0 +1,7 @@
+name = "apple-m5-smoke"
+backend = "rust_cpu"
+workloads = ["vector_add"]
+sizes = [1024, 65536]
+warmup_iterations = 10
+measured_iterations = 15
+validation = true
