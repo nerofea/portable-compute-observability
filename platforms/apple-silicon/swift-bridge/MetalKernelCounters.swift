@@ -34,10 +34,10 @@ func execute()->(UInt64,Double?,Double?) {
  encoder.setBuffer(b,offset:0,index:1)
  encoder.setBuffer(out,offset:0,index:2)
  var count=UInt32(n);encoder.setBytes(&count,length:4,index:3)
- if let sample=sample { encoder.sampleCounters(sample,at:0,withBarrier:true) }
+ if let sample=sample { encoder.sampleCounters(sampleBuffer:sample,sampleIndex:0,barrier:true) }
  let width=min(256,pipeline.maxTotalThreadsPerThreadgroup)
  encoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:width,height:1,depth:1))
- if let sample=sample { encoder.sampleCounters(sample,at:1,withBarrier:true) }
+ if let sample=sample { encoder.sampleCounters(sampleBuffer:sample,sampleIndex:1,barrier:true) }
  encoder.endEncoding()
  let begin=DispatchTime.now().uptimeNanoseconds
  command.commit();command.waitUntilCompleted()
