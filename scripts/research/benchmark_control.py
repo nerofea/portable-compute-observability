@@ -86,7 +86,7 @@ def main():
   ("metal_kernel_counters",["bash","scripts/gpu/run-metal-kernel-counters.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
   ("wgpu",["cargo","run","--release","-p","pco-wgpu","--",str(v.elements),str(v.warmups),str(v.samples)],"cargo"),
   ("accelerate",["bash","scripts/research/run-accelerate.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
-  ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python"),
+  ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python3"),
   ("mlx_compute",[sys.executable,"scripts/research/mlx-compute.py","64",str(v.warmups),str(v.samples)],"python")]
  records=[]
  windows=[]
