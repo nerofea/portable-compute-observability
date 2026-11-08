@@ -76,6 +76,7 @@ def main():
  cases=[
   ("precision",["cargo","run","--release","-p","pco-precision","--",str(v.elements),str(v.samples)],"cargo"),
   ("metal",["bash","scripts/gpu/run-metal-primitives.sh",str(v.elements),str(v.samples),"17"],"bash"),
+  ("metal_tensor",["bash","scripts/gpu/run-metal-tensor.sh","64",str(v.warmups),str(v.samples)],"bash"),
   ("metal_kernel_counters",["bash","scripts/gpu/run-metal-kernel-counters.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
   ("wgpu",["cargo","run","--release","-p","pco-wgpu","--",str(v.elements),str(v.warmups),str(v.samples)],"cargo"),
   ("accelerate",["bash","scripts/research/run-accelerate.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
@@ -85,7 +86,7 @@ def main():
   with (session/"runs.jsonl").open("w") as f:
    for name,cmd,required in cases:
     if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
-    elif name in ("metal","metal_kernel_counters","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
+    elif name in ("metal","metal_kernel_counters","metal_tensor","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
     else:r=execute(name,cmd,session,v.timeout,v.warmups,v.samples)
     records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(name,r["status"],flush=True)
  finally:stop.set();worker.join(timeout=5)
