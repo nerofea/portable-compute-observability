@@ -1,6 +1,6 @@
 name = "apple-m5-smoke"
 backend = "rust_cpu"
-workloads = ["vector_add"]
+workloads = ["vector_add", "copy", "scale", "triad"]
 sizes = [1024, 65536]
 warmup_iterations = 10
 measured_iterations = 15
