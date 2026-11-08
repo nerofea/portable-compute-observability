@@ -4,6 +4,7 @@ import argparse,csv,datetime,html,json,os,pathlib,platform,shutil,statistics,sub
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 import native_telemetry as telemetry
 from apple_power import ApplePowerSampler
+from thermal_monitor import ThermalMonitor
 POWER_SAMPLES=[]
 def command(cmd,timeout=10):
  try:
@@ -63,6 +64,8 @@ def main():
  (session/"telemetry_capabilities.json").write_text(json.dumps(telemetry.capabilities(),indent=2))
  power_sampler=ApplePowerSampler(session/"apple_power_components.csv")
  power_sampler.start()
+ thermal=ThermalMonitor(session/"thermal.jsonl",ROOT)
+ thermal.start()
  stop=threading.Event()
  def monitor():
   with (session/"resources.jsonl").open("a") as f:
@@ -72,6 +75,7 @@ def main():
  cases=[
   ("precision",["cargo","run","--release","-p","pco-precision","--",str(v.elements),str(v.samples)],"cargo"),
   ("metal",["bash","scripts/gpu/run-metal-primitives.sh",str(v.elements),str(v.samples),"17"],"bash"),
+  ("metal_kernel_counters",["bash","scripts/gpu/run-metal-kernel-counters.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
   ("wgpu",["cargo","run","--release","-p","pco-wgpu","--",str(v.elements),str(v.warmups),str(v.samples)],"cargo"),
   ("accelerate",["bash","scripts/research/run-accelerate.sh",str(v.elements),str(v.warmups),str(v.samples)],"bash"),
   ("mlx",[sys.executable,"scripts/research/mlx-benchmark.py",str(v.elements),str(v.warmups),str(v.samples)],"python")]
@@ -80,11 +84,12 @@ def main():
   with (session/"runs.jsonl").open("w") as f:
    for name,cmd,required in cases:
     if not shutil.which(required):r={"name":name,"status":"skipped","reason":"Missing executable: "+required,"energy_joules":None}
-    elif name in ("metal","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
+    elif name in ("metal","metal_kernel_counters","accelerate","mlx") and sys.platform!="darwin":r={"name":name,"status":"skipped","reason":"Requires macOS","energy_joules":None}
     else:r=execute(name,cmd,session,v.timeout,v.warmups,v.samples)
     records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(name,r["status"],flush=True)
  finally:stop.set();worker.join(timeout=5)
  (session/"apple_power_status.json").write_text(json.dumps(power_sampler.stop(),indent=2))
+ (session/"thermal_status.json").write_text(json.dumps({"status":thermal.stop()},indent=2))
  (session/"resource_summary.json").write_text(json.dumps(telemetry.summarize_resource_file(session/"resources.jsonl"),indent=2))
  fields=["name","status","reason","wall_ms","warmups_requested","samples_requested","samples_observed","median_ns","p95_ns","energy_joules","energy_status"]
  with (session/"summary.csv").open("w",newline="") as f:
