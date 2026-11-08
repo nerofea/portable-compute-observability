@@ -3,6 +3,7 @@
 import argparse,csv,datetime,html,json,os,pathlib,platform,shutil,statistics,subprocess,sys,threading,time,uuid
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 import native_telemetry as telemetry
+from apple_power import ApplePowerSampler
 POWER_SAMPLES=[]
 def command(cmd,timeout=10):
  try:
@@ -60,6 +61,8 @@ def main():
  (ROOT/"results"/"raw").mkdir(parents=True,exist_ok=True)
  (session/"environment.json").write_text(json.dumps(environment(),indent=2))
  (session/"telemetry_capabilities.json").write_text(json.dumps(telemetry.capabilities(),indent=2))
+ power_sampler=ApplePowerSampler(session/"apple_power_components.csv")
+ power_sampler.start()
  stop=threading.Event()
  def monitor():
   with (session/"resources.jsonl").open("a") as f:
@@ -81,6 +84,7 @@ def main():
     else:r=execute(name,cmd,session,v.timeout,v.warmups,v.samples)
     records.append(r);f.write(json.dumps(r)+"\n");f.flush();print(name,r["status"],flush=True)
  finally:stop.set();worker.join(timeout=5)
+ (session/"apple_power_status.json").write_text(json.dumps(power_sampler.stop(),indent=2))
  (session/"resource_summary.json").write_text(json.dumps(telemetry.summarize_resource_file(session/"resources.jsonl"),indent=2))
  fields=["name","status","reason","wall_ms","warmups_requested","samples_requested","samples_observed","median_ns","p95_ns","energy_joules","energy_status"]
  with (session/"summary.csv").open("w",newline="") as f:
