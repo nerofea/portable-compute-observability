@@ -1,0 +1,35 @@
+schema_version = 1
+experiment = "cuda-cccl-version-matrix"
+hardware_target = "sm_86"
+baseline_cuda = "12.9"
+baseline_cccl = "2.8.2"
+candidate_cccl = "3.5"
+# A newer CUDA toolkit is not presumed compatible until checked.
+# CUDA and CCCL versions are independent experimental dimensions.
+
+[[configurations]]
+id = "cuda129-bundled"
+cuda = "12.9"
+cccl = "bundled"
+policies = ["immediate", "readback", "bucketed"]
+status = "compatibility-check-required"
+
+[[configurations]]
+id = "cuda129-cccl35"
+cuda = "12.9"
+cccl = "3.5"
+policies = ["immediate", "readback", "deferred", "bucketed"]
+status = "compatibility-check-required"
+
+[[configurations]]
+id = "cuda-new-cccl35"
+cuda = "newer-compatible"
+cccl = "3.5"
+policies = ["immediate", "readback", "deferred", "bucketed"]
+status = "toolkit-selection-required"
+
+[measurement]
+warmup_iterations = 100
+measured_iterations = 1000
+statistics = ["p50", "p95", "p99", "mean"]
+record = ["cuda_version", "cccl_version", "driver_version", "gpu_name", "compute_capability", "nvcc_path", "policy", "input_size", "selected_count", "correctness", "gpu_time_us", "host_latency_us"]
