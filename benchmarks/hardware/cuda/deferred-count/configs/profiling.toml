@@ -1,0 +1,5 @@
+name = "profiling"
+capacity = 65536
+selectivity_percent = [1, 50, 100]
+profiler = "nsys"
+# Profiling runs are excluded from latency statistics.

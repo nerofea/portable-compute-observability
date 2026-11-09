@@ -1,0 +1,7 @@
+name = "calibration"
+capacities = [4096, 65536, 1048576]
+selectivity_percent = [0, 1, 5, 10, 25, 50, 90, 100]
+warmups = 100
+iterations = 1000
+repetitions = 3
+seed = 12648430

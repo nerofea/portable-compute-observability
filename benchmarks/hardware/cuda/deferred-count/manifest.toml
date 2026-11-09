@@ -1,0 +1,8 @@
+schema_version = 1
+experiment = "deferred-count"
+engine = "engines/cuda/deferred-count"
+required_gpu = "NVIDIA CUDA, SM 8.6 target"
+required_cccl = "3.5"
+policies = ["immediate", "readback", "deferred", "bucketed", "padded"]
+workloads = ["fixed", "uniform", "bimodal", "zipf-like", "bursty"]
+hypotheses = ["H1", "H2", "H3", "H4", "H5", "H6", "H7"]

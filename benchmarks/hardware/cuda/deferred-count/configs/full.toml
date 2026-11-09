@@ -1,0 +1,10 @@
+name = "full"
+capacity_powers_of_two = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+selectivity_percent = [0, 1, 5, 10, 25, 50, 90, 100]
+workloads = ["fixed", "uniform", "bimodal", "zipf-like", "bursty"]
+policies = ["immediate", "readback", "deferred", "bucketed", "padded"]
+warmups = 200
+iterations = 5000
+repetitions = 10
+seed = 12648430
+randomize_policy_order = true

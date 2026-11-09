@@ -1,0 +1,7 @@
+name = "smoke"
+capacities = [4096, 65536]
+selectivity_percent = [0, 1, 50, 100]
+warmups = 20
+iterations = 100
+repetitions = 1
+seed = 12648430
